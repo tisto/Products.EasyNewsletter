@@ -402,6 +402,16 @@ class EasyNewsletter(ATTopic, atapi.BaseFolder):
                 result.add(utility[0], utility[0])
         return result
 
+    def er_change_email_url(self, uid):
+        url = '{newsletter_url}/change_email?subscriber={uid}'.format(
+            newsletter_url=self.absolute_url(), uid=uid)
+        return url
+
+    def er_confirm_newsletter_url(self, uid):
+        url = '{newsletter_url}/confirm_newsletter?subscriber={uid}'.format(
+            newsletter_url=self.absolute_url(), uid=uid)
+        return url
+
 
 atapi.registerType(EasyNewsletter, config.PROJECTNAME)
 

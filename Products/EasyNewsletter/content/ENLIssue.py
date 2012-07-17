@@ -355,6 +355,28 @@ class ENLIssue(ATTopic, atapi.BaseContent):
                 else:
                     personal_text = text.replace("[[UNSUBSCRIBE]]", "")
                     personal_text_plain = text_plain.replace("[[UNSUBSCRIBE]]", "")
+
+                # --[ er: confirm and change email links ]--------------------
+
+                if 'uid' in receiver:
+                    change_email_url = enl.er_change_email_url(receiver['uid'])
+                    confirm_newsletter_url = enl.er_confirm_newsletter_url(receiver['uid'])
+                else:
+                    change_email_url = '...'
+                    confirm_newsletter_url = '...'
+
+                personal_text = personal_text.replace(
+                    '[[CHANGE_EMAIL_URL]]', change_email_url)
+                personal_text_plain = personal_text_plain.replace(
+                    '[[CHANGE_EMAIL_URL]]', change_email_url)
+
+                personal_text = personal_text.replace(
+                    '[[CONFIRM_NEWSLETTER_URL]]', confirm_newsletter_url)
+                personal_text_plain = personal_text_plain.replace(
+                    '[[CONFIRM_NEWSLETTER_URL]]', confirm_newsletter_url)
+
+                # --[ /er: confirm and change email links ]-------------------
+
                 if 'salutation' in receiver:
                     salutation = receiver["salutation"]
                 else:

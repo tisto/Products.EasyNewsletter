@@ -61,6 +61,5 @@ class NewsletterView(BrowserView):
         else:
             subscriber.er_confirmed = True
             putils.addPortalMessage(_("You have confirmed the email address."))
-            return self.request.response.redirect(
-                '{newsletter_url}/change_email?subscriber={uid}'.format(
-                    newsletter_url=newsletter_url, uid=uid))
+            change_email_url = self.context.er_change_email_url(uid)
+            return self.request.response.redirect(change_email_url)
