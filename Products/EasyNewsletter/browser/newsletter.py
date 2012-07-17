@@ -56,16 +56,11 @@ class NewsletterView(BrowserView):
             putils.addPortalMessage(_("An error occured"), "error")
             return self.request.response.redirect(newsletter_url)
 
-        confirmed = getattr(subscriber, 'er_confirmed', False)
-        if confirmed:
-            putils.addPortalMessage(
-                _("Your E-Mail-Adress is already confirmed."))
-            return self.request.response.redirect(newsletter_url)
-        else:
-            subscriber.er_confirmed = True
-            putils.addPortalMessage(_("You have confirmed the email address."))
-            change_email_url = self.context.er_change_email_url(uid)
-            return self.request.response.redirect(change_email_url)
+        subscriber.er_confirmed = True
+        putils.addPortalMessage(_("Thank you for confirming your "
+                                  "newsletter subscription."))
+        change_email_url = self.context.er_change_email_url(uid)
+        return self.request.response.redirect(change_email_url)
 
     def change_email(self):
         putils = getToolByName(self.context, "plone_utils")
