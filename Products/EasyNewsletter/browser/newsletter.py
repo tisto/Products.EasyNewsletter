@@ -70,7 +70,7 @@ class NewsletterView(BrowserView):
     def change_email(self):
         putils = getToolByName(self.context, "plone_utils")
         catalog = getToolByName(self.context, "reference_catalog")
-        registration_tool = getToolByName(self, 'portal_registration')
+        registration_tool = getToolByName(self.context, 'portal_registration')
 
         uid = self.request.get("subscriber")
         subscriber = catalog.lookupObject(uid)
