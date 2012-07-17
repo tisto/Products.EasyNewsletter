@@ -116,4 +116,12 @@
     attribute="change_email"
     permission="zope2.Public" />
 
+  <browser:page
+    name="remove_unconfirmed"
+    for="..interfaces.IEasyNewsletter"
+    class=".subscribers.Enl_Subscribers_View"
+    attribute="remove_unconfirmed"
+    permission="cmf.ManagePortal" />
+
+
 </configure>

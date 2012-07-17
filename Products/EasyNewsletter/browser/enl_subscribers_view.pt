@@ -73,7 +73,6 @@
                 </tal:subscriber>
             </table>
 
-        </div>
         <p>
             <a href=""
                tal:attributes="href string:${context/absolute_url}/@@upload_csv"
@@ -85,6 +84,18 @@
                tal:attributes="href string:${context/absolute_url}/@@download_csv"
                i18n:translate="easynewsletter_label_export_subscribers">Export subscribers</a>
         </p>
+
+        <p tal:define="num_unconfirmed python:len(view.unconfirmed_subscribers(subscribers))"
+            tal:condition="python: num_unconfirmed > 0">
+            <a href=""
+               tal:attributes="href string:${context/absolute_url}/@@remove_unconfirmed"
+               i18n:translate="easynewsletter_label_remove_unconfirmed_subscribers">
+              Remove unconfirmed subscribers 
+            (<span i18n:name="num" tal:content="num_unconfirmed">12345</span>)</a>
+        </p>
+
+        </div>
+
 
     </tal:main-macro>
 </metal:main>

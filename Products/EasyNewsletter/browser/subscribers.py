@@ -4,6 +4,7 @@ import tempfile
 from Acquisition import aq_inner
 from Products.CMFCore.utils import getToolByName
 from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from zope.component import getUtility
 from zope.component.interfaces import ComponentLookupError
@@ -29,6 +30,8 @@ class Enl_Subscribers_View(BrowserView):
     """
     implements(IEnl_Subscribers_View)
 
+    remove_unconfirmed_template = ViewPageTemplateFile('remove_unconfirmed.pt')
+
     def __init__(self, context, request):
         self.context = context
         self.request = request
@@ -52,13 +55,17 @@ class Enl_Subscribers_View(BrowserView):
                 salutation = SALUTATION.getValue(brain.salutation, '')
             else:
                 salutation = ''
+            subscriber = brain.getObject()
             subscribers.append(dict(source='plone',
                                deletable=True,
                                email=brain.email,
                                getURL=brain.getURL(),
                                salutation=salutation,
                                fullname=brain.fullname,
-                               organization=brain.organization))
+                               organization=brain.organization,
+                               confirmed=getattr(subscriber, 'er_confirmed',
+                                                 True),
+                               id=subscriber.getId()))
 
         # External subscribers
         external_source_name = self.context.getSubscriberSource()
@@ -73,6 +80,35 @@ class Enl_Subscribers_View(BrowserView):
                 subscribers.append(subscriber)
 
         return subscribers
+
+    def is_unconfirmed(self, subscriber):
+        if ('id' in subscriber and 'confirmed' in subscriber and
+            subscriber['source'] == 'plone'):
+            confirmed = subscriber.get('confirmed', True)
+            if not confirmed:
+                return True
+        return False
+
+    def unconfirmed_subscribers(self, subscribers=None):
+        subscribers = subscribers if subscribers else self.subscribers()
+        unconfirmed = []
+        for subscriber in subscribers:
+            if self.is_unconfirmed(subscriber):
+                unconfirmed.append(subscriber)
+        return unconfirmed
+
+    def remove_unconfirmed(self):
+        if self.request.method == 'POST' and self.request.get('confirmed'):
+            unconfirmed_ids = [subscriber['id'] for subscriber in
+                               self.unconfirmed_subscribers()]
+            num = str(len(unconfirmed_ids))
+            self.context.manage_delObjects(unconfirmed_ids)
+            IStatusMessage(self.request).addStatusMessage(
+                _('${num} subscriber(s) have been deleted',
+                  mapping={'num': num}), type='info')
+            self.request.response.redirect(self.context.absolute_url())
+
+        return self.remove_unconfirmed_template()
 
 
 class UploadCSV(BrowserView):
@@ -165,7 +201,7 @@ class UploadCSV(BrowserView):
                              'failure': 'An error occured while creating this subscriber: %s' % str(e)})
 
         return {'success': success, 'fail': fail}
-
+        
 
 class DownloadCSV(BrowserView):
 

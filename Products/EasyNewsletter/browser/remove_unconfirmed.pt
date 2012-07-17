@@ -1,0 +1,62 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="EasyNewsletter">
+<body>
+
+<div metal:fill-slot="main">
+
+  <br/>
+  <form method="post"
+        id="remove_unconfirmed_form"
+        tal:attributes="action string:${context/absolute_url}/remove_unconfirmed"
+        tal:define="unconfirmed python:view.unconfirmed_subscribers()">
+
+    <h2 i18n:translate="">Remove unconfirmed subscriptions</h2>
+
+    <input type="hidden"
+           name="confirmed"
+           value="1" 
+           />
+
+    <br/><br/>
+    <table class="listing" summary="Subscriber Listing">
+      <tr>
+        <th i18n:translate="">Email</th>
+        <th i18n:translate="">Salutation</th>
+        <th i18n:translate="">Name</th>
+        <th i18n:translate="">Company/Organization</th>
+      </tr>
+      <tal:subscriber tal:repeat="subscriber unconfirmed">
+        <tr tal:define="oddrow repeat/subscriber/odd"
+            tal:attributes="class python:oddrow and 'odd' or 'even'">
+          <td>
+            <a tal:attributes="href string:${subscriber/getURL|nothing}"
+               tal:content="subscriber/email">
+              email </a>
+          </td>
+          <td i18n:translate="" tal:content="subscriber/salutation" />
+          <td i18n:translate="" tal:content="subscriber/fullname" />
+          <td i18n:translate="" tal:content="subscriber/organization|nothing"></td>
+        </tr>
+      </tal:subscriber>
+    </table>
+
+
+    <p><b i18n:translate="">Warning: This cannot be undone.</b></p>
+
+    <button id="form_send"
+            class="send"
+            type="submit"
+            name="send"
+            value="remove_unconfirmed">
+      Remove unconfirmed subscribers</button>
+
+  </form>
+
+
+
+</div>
+
+</body>
+</html>
