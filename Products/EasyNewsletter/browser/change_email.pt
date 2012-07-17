@@ -1,0 +1,59 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="EasyNewsletter">
+<body>
+
+<div metal:fill-slot="main">
+
+  <br/>
+  <form method="post"
+        id="change_email_form"
+        tal:attributes="action string:${context/absolute_url}/change_email">
+
+    <input type="hidden"
+           name="subscriber"
+           tal:attributes="value python:context.REQUEST.get('subscriber', '')" 
+           />
+
+    <br/><br/>
+
+    <label for="new"
+           i18n:translate="EasyNewsletter_label_newEmail">
+           New email address
+    </label>
+
+    <input type="text"
+           name="new"
+           size="40"
+           tal:attributes="value python:context.REQUEST.get('new', '')" />
+
+    <br/><br/>
+
+
+    <label for="new_confirm"
+           i18n:translate="EasyNewsletter_label_confirmNnewEmail">
+           Confirm new email address
+    </label>
+
+    <input type="text"
+           name="confirm_new"
+           size="40"
+           tal:attributes="value python:context.REQUEST.get('new', '')" />
+
+    <br/><br/>
+
+    <input id="form_send"
+           class="send"
+           type="submit"
+           name="send"
+           value="change_email" />
+
+  </form>
+
+
+
+</div>
+
+</body>
+</html>

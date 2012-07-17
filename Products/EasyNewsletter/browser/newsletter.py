@@ -1,6 +1,7 @@
 from AccessControl.SecurityManagement import newSecurityManager
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 from Products.EasyNewsletter import EasyNewsletterMessageFactory as _
 
@@ -8,6 +9,8 @@ from Products.EasyNewsletter import EasyNewsletterMessageFactory as _
 class NewsletterView(BrowserView):
     """
     """
+
+    confirm_email_template = ViewPageTemplateFile('change_email.pt')
 
     def unsubscribe(self):
         """
@@ -63,3 +66,41 @@ class NewsletterView(BrowserView):
             putils.addPortalMessage(_("You have confirmed the email address."))
             change_email_url = self.context.er_change_email_url(uid)
             return self.request.response.redirect(change_email_url)
+
+    def change_email(self):
+        putils = getToolByName(self.context, "plone_utils")
+        catalog = getToolByName(self.context, "reference_catalog")
+        registration_tool = getToolByName(self, 'portal_registration')
+
+        uid = self.request.get("subscriber")
+        subscriber = catalog.lookupObject(uid)
+        newsletter_url = self.context.absolute_url()
+        if subscriber is None:
+            putils.addPortalMessage(_("Subscriber not found"), "error")
+            return self.request.response.redirect(newsletter_url)
+
+        if self.request.method == 'POST':
+            new_email = self.request.get("new", '').strip()
+            new_email_confirm = self.request.get("confirm_new",
+                                                   '').strip()
+            errors = False
+            if not registration_tool.isValidEmail(new_email):
+                putils.addPortalMessage(
+                    _('Please specify a valid new email address.'), 'error')
+                errors = True
+            if new_email != new_email_confirm:
+                putils.addPortalMessage(
+                    _('The new email addresses you gave do not match.'),
+                'error')
+                errors = True
+            if errors:
+                return self.confirm_email_template()
+
+            subscriber.email = new_email
+            putils.addPortalMessage(
+                _('The email address for your subscription was '
+                  'changed to: ${email}',
+                  mapping={'email': new_email}), 'info')
+            return self.request.response.redirect(newsletter_url)
+
+        return self.confirm_email_template()

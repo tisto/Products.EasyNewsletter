@@ -109,4 +109,11 @@
     attribute="confirm_newsletter"
     permission="zope2.Public" />
 
+  <browser:page
+    name="change_email"
+    for="..interfaces.IEasyNewsletter"
+    class=".newsletter.NewsletterView"
+    attribute="change_email"
+    permission="zope2.Public" />
+
 </configure>
