@@ -42,3 +42,25 @@ class NewsletterView(BrowserView):
             content = issue.restrictedTraverse('@@get-public-body')()
             result.append(dict(content=content, title=issue.Title()))
         return result
+
+    def confirm_newsletter(self):
+        putils = getToolByName(self.context, "plone_utils")
+        catalog = getToolByName(self.context, "reference_catalog")
+        uid = self.request.get("subscriber")
+        subscriber = catalog.lookupObject(uid)
+        newsletter_url = self.context.absolute_url()
+        if subscriber is None:
+            putils.addPortalMessage(_("An error occured"), "error")
+            return self.request.response.redirect(newsletter_url)
+
+        confirmed = getattr(subscriber, 'er_confirmed', False)
+        if confirmed:
+            putils.addPortalMessage(
+                _("Your E-Mail-Adress is already confirmed."))
+            return self.request.response.redirect(newsletter_url)
+        else:
+            subscriber.er_confirmed = True
+            putils.addPortalMessage(_("You have confirmed the email address."))
+            return self.request.response.redirect(
+                '{newsletter_url}/change_email?subscriber={uid}'.format(
+                    newsletter_url=newsletter_url, uid=uid))

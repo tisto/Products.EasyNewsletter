@@ -100,4 +100,13 @@
     name="Products.EasyNewsletter.enl_edithelper.js"
 	  file="javascripts/enl_edithelper.js" />
 
+  <!-- E-Mail bestaetigen + aendern -->
+
+  <browser:page
+    name="confirm_newsletter"
+    for="..interfaces.IEasyNewsletter"
+    class=".newsletter.NewsletterView"
+    attribute="confirm_newsletter"
+    permission="zope2.Public" />
+
 </configure>

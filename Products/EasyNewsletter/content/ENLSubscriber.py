@@ -74,10 +74,15 @@ class ENLSubscriber(atapi.BaseContent):
     schema = schema
     _at_rename_after_creation = True
 
+    # Attribute, um Subscriber nachtraeglich zu bestaetigen
+    # Fuer neue Subscriber in initializeArchetype immer True
+    er_confirmed = False
+
     def initializeArchetype(self, **kwargs):
         """Overwritten hook
         """
         atapi.BaseContent.initializeArchetype(self, **kwargs)
+        self.er_confirmed = True
 
     def setEmail(self, value):
         """
