@@ -85,7 +85,7 @@ class NewsletterView(BrowserView):
                     'error')
                 return self.confirm_email_template()
 
-            subscriber.email = new_email
+            subscriber.setEmail(new_email)
             putils.addPortalMessage(
                 (u'Die E-Mail-Adresse wurde in geändert. '
                  u'Der Newsletter wir nun an „%s“ gesendet.') % new_email,
