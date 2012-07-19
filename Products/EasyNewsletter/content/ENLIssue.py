@@ -193,6 +193,7 @@ class ENLIssue(ATTopic, atapi.BaseContent):
         """ return list of recipients """
 
         request = self.REQUEST
+        catalog = getToolByName(self, "portal_catalog")
         enl = self.getNewsletter()
         salutation_mappings = {}
         for line in enl.getSalutations():
@@ -207,7 +208,17 @@ class ENLIssue(ATTopic, atapi.BaseContent):
             if test_receiver == "":
                 test_receiver = enl.getTestEmail()
             salutation = salutation_mappings.get('default', '')
-            receivers = [{'email': test_receiver, 'fullname': 'Test Member', 'salutation': salutation}]
+            receivers = [{'email': test_receiver,
+                          'fullname': 'Test Member',
+                          'salutation': salutation,
+                          'uid': '--demo-testuser-link--'}]
+            matching_subscribers = catalog(
+                email=test_receiver,
+                portal_type='ENLSubscriber',
+                path='/'.join(enl.getPhysicalPath()))
+            if matching_subscribers:
+                subscriber = matching_subscribers[0].getObject()
+                receivers[0]['uid'] = subscriber.UID()
         else:
             # get ENLSubscribers
             enl_receivers = []
@@ -343,6 +354,8 @@ class ENLIssue(ATTopic, atapi.BaseContent):
                 personal_text_plain = text_plain.replace("[[SUBSCRIBER_SALUTATION]]", "")
                 personal_text = text.replace("[[UNSUBSCRIBE]]", "")
                 personal_text_plain = text_plain.replace("[[UNSUBSCRIBE]]", "")
+
+                
             else:
                 if 'uid' in receiver:
                     try:
@@ -355,27 +368,6 @@ class ENLIssue(ATTopic, atapi.BaseContent):
                 else:
                     personal_text = text.replace("[[UNSUBSCRIBE]]", "")
                     personal_text_plain = text_plain.replace("[[UNSUBSCRIBE]]", "")
-
-                # --[ er: confirm and change email links ]--------------------
-
-                if 'uid' in receiver:
-                    change_email_url = enl.er_change_email_url(receiver['uid'])
-                    confirm_newsletter_url = enl.er_confirm_newsletter_url(receiver['uid'])
-                else:
-                    change_email_url = '...'
-                    confirm_newsletter_url = '...'
-
-                personal_text = personal_text.replace(
-                    '[[CHANGE_EMAIL_URL]]', change_email_url)
-                personal_text_plain = personal_text_plain.replace(
-                    '[[CHANGE_EMAIL_URL]]', change_email_url)
-
-                personal_text = personal_text.replace(
-                    '[[CONFIRM_NEWSLETTER_URL]]', confirm_newsletter_url)
-                personal_text_plain = personal_text_plain.replace(
-                    '[[CONFIRM_NEWSLETTER_URL]]', confirm_newsletter_url)
-
-                # --[ /er: confirm and change email links ]-------------------
 
                 if 'salutation' in receiver:
                     salutation = receiver["salutation"]
@@ -392,6 +384,29 @@ class ENLIssue(ATTopic, atapi.BaseContent):
             subscriber_salutation = safe_portal_encoding(salutation) + ' ' + safe_portal_encoding(fullname)
             personal_text = personal_text.replace("[[SUBSCRIBER_SALUTATION]]", str(subscriber_salutation))
             personal_text_plain = personal_text_plain.replace("[[SUBSCRIBER_SALUTATION]]", str(subscriber_salutation))
+
+            # --[ er: confirm and change email links ]--------------------
+
+            uid = receiver.get('uid', None)
+            if uid:
+                change_email_url = enl.er_change_email_url(uid)
+                confirm_newsletter_url = enl.er_confirm_newsletter_url(uid)
+            else:
+                change_email_url = ''
+                confirm_newsletter_url = ''
+
+            personal_text = personal_text.replace(
+                '[[CHANGE_EMAIL_URL]]', change_email_url)
+            personal_text_plain = personal_text_plain.replace(
+                '[[CHANGE_EMAIL_URL]]', change_email_url)
+
+            personal_text = personal_text.replace(
+                '[[CONFIRM_NEWSLETTER_URL]]', confirm_newsletter_url)
+            personal_text_plain = personal_text_plain.replace(
+                '[[CONFIRM_NEWSLETTER_URL]]', confirm_newsletter_url)
+
+            # --[ /er: confirm and change email links ]-------------------
+
 
             outer['From'] = from_header
             outer['Subject'] = subject_header
