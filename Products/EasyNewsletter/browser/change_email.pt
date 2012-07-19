@@ -7,10 +7,11 @@
 <div metal:fill-slot="main">
 
   
-  <h2 i18n:translate="">Change your email address</h2>
+  <h2 i18n:translate="">E-Mail-Adresse ändern</h2>
 
   <p i18n:translate="">
-    You can change the address for your subscription with theis form.
+    Hier können sie die E-Mail-Adresse ändern, an die der Newsletter 
+    gesendet wird.
   </p>
   <form method="post"
         id="change_email_form"
@@ -25,24 +26,11 @@
 
     <label for="new"
            i18n:translate="EasyNewsletter_label_newEmail">
-           New email address
+           Neue E-Mail-Adresse
     </label>
     <br/>
     <input type="text"
            name="new"
-           size="40"
-           tal:attributes="value python:context.REQUEST.get('new', '')" />
-
-    <br/>
-    <br/>
-
-    <label for="new_confirm"
-           i18n:translate="EasyNewsletter_label_confirmNnewEmail">
-           Confirm new email address
-    </label>
-    <br/>
-    <input type="text"
-           name="confirm_new"
            size="40"
            tal:attributes="value python:context.REQUEST.get('new', '')" />
 
@@ -53,12 +41,11 @@
            type="submit"
            name="send"
            value="change_email">
-      Save
+      Speichern
     </button>
     &nbsp;&nbsp;
-    <a href="" i18n:translate=""
-       tal:attributes="href context/absolute_url">
-      Return to the newsletter
+    <a href="" tal:attributes="href context/absolute_url">
+      Zurück zum Newsletter
     </a>
 
   </form>
