@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '2.6.1.1-er'
+version = '2.6.1.2-er'
 
 setup(name='Products.EasyNewsletter',
     version=version,
