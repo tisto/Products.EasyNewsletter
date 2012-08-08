@@ -407,20 +407,12 @@ class ENLIssue(ATTopic, atapi.BaseContent):
 
             # --[ /er: confirm and change email links ]-------------------
 
-
             outer['From'] = from_header
             outer['Subject'] = subject_header
             outer.epilogue = ''
 
             # Attach text part
-            #text_part = MIMEText(personal_text_plain, "plain", charset)
-
-            # Attach html part with images
-            #html_part =  MIMEText(personal_text, "html", charset)
-
-            # Attach text part
-            text_part = MIMEMultipart("related")
-            text_part.attach(MIMEText(personal_text_plain, "plain", charset))
+            text_part = MIMEText(personal_text_plain, "plain", charset)
 
             # Attach html part with images
             html_part = MIMEMultipart("related")
