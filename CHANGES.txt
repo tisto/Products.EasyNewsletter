@@ -1,6 +1,25 @@
 Changelog
 =========
 
+2.6.1.2-er
+----------
+
+- Fix rendering problem in Thunderbird. Don't use multipart for the
+  plain text part
+
+2.6.1.1-er
+----------
+
+- Add a change email form. The personalized URL to the form can be
+  inserted into newsletters with the marker [[CHANGE_EMAIL_URL]].
+
+- Add manual email/subscription verification for existing subscribers.
+  A marker for a personalized URL can be inserted into newletters with
+  the marker [[CONFIRM_NEWSLETTER_URL]]. Admins can bulk delete all
+  users that did not visit the URL to confirm their subscription. New
+  subscribers are not affected by this. After confirming the
+  subscription users are redirected to the change email form.
+
 2.6.2 (unreleased)
 ------------------
 
