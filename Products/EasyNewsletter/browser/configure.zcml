@@ -123,5 +123,11 @@
     attribute="remove_unconfirmed"
     permission="cmf.ManagePortal" />
 
+  <browser:page
+    name="remove_all_subscribers"
+    for="..interfaces.IEasyNewsletter"
+    class=".subscribers.Enl_Subscribers_View"
+    attribute="remove_all_subscribers"
+    permission="cmf.ManagePortal" />
 
 </configure>

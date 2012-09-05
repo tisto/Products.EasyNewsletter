@@ -15,7 +15,12 @@ from Products.EasyNewsletter.config import SALUTATION
 from Products.EasyNewsletter.interfaces import ISubscriberSource
 
 
-CSV_HEADER = [_(u"salutation"), _(u"fullname"), _(u"email"), _(u"organization"), ]
+CSV_HEADER = [
+    _(u"salutation"),
+    _(u"fullname"),
+    _(u"email"),
+    _(u"organization"),
+]
 
 
 class IEnl_Subscribers_View(Interface):
@@ -48,9 +53,10 @@ class Enl_Subscribers_View(BrowserView):
         subscribers = list()
 
         # Plone subscribers
-        for brain in self.portal_catalog(portal_type = 'ENLSubscriber',
-                                         path='/'.join(self.context.getPhysicalPath()),
-                                         sort_on='email'):
+        for brain in self.portal_catalog(
+            portal_type='ENLSubscriber',
+            path='/'.join(self.context.getPhysicalPath()),
+            sort_on='email'):
             if brain.salutation:
                 salutation = SALUTATION.getValue(brain.salutation, '')
             else:
@@ -110,6 +116,20 @@ class Enl_Subscribers_View(BrowserView):
 
         return self.remove_unconfirmed_template()
 
+    def remove_all_subscribers(self):
+        subscribers = self.portal_catalog.searchResults(
+            portal_type='ENLSubscriber',
+            path='/'.join(self.context.getPhysicalPath()),
+        )
+        subscriber_ids = [x.getId for x in subscribers]
+        num = str(len(subscriber_ids))
+        self.context.manage_delObjects(subscriber_ids)
+
+        IStatusMessage(self.request).addStatusMessage(
+            _('${num} subscriber(s) have been deleted',
+              mapping={'num': num}), type='info')
+        self.request.response.redirect(self.context.absolute_url())
+
 
 class UploadCSV(BrowserView):
 
@@ -130,10 +150,8 @@ class UploadCSV(BrowserView):
         plone_utils = getToolByName(self.context, 'plone_utils')
         encoding = plone_utils.getSiteEncoding()
         existing = self.context.objectIds()
-        messages = IStatusMessage(self.request)
         success = []
         fail = []
-        data = []
 
         # Show error if no file was specified
         filename = self.request.form.get('csv_upload', None)
@@ -201,7 +219,7 @@ class UploadCSV(BrowserView):
                              'failure': 'An error occured while creating this subscriber: %s' % str(e)})
 
         return {'success': success, 'fail': fail}
-        
+
 
 class DownloadCSV(BrowserView):
 
